@@ -299,8 +299,8 @@ jobs:
           echo "Configuring networking..."
           mkdir -p $WORKDIR_BASE/root/etc/systemd/network
           chmod 755 $WORKDIR_BASE/root/etc/systemd/network
-          cp -v ${{ github.workspace }}/src/etc/systemd/network/20-wired.network $WORKDIR_BASE/root/etc/systemd/network/20-wired.network
-          cp -v ${{ github.workspace }}/src/etc/systemd/network/20-wireless.network $WORKDIR_BASE/root/etc/systemd/network/20-wireless.network
+          cp -v ${GITHUB_WORKSPACE}/src/etc/systemd/network/20-wired.network $WORKDIR_BASE/root/etc/systemd/network/20-wired.network
+          cp -v ${GITHUB_WORKSPACE}/src/etc/systemd/network/20-wireless.network $WORKDIR_BASE/root/etc/systemd/network/20-wireless.network
       
       # Configure WiFi
       - name: Configure WiFi
