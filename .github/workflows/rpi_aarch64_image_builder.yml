@@ -620,9 +620,9 @@ jobs:
           zstd -T0 -19 -f "$LOOP_PATH/$IMAGE_NAME" -o "$LOOP_PATH/$IMAGE_NAME.zst"
           echo "Compressed file: $LOOP_PATH/$IMAGE_NAME.zst"
       
-      # Upload iso to S3 
+      # Upload iso to S3
       - name: Upload ISO with S3 API (s3cmd)
-        if: env.UPLOAD_TO_S3 == 'true'
+        if: vars.UPLOAD_TO_S3 == 'true' || inputs.upload_to_s3 == true
         run: |
           echo "Starting ISO upload to S3: $(basename "$LOOP_PATH/$IMAGE_NAME")"
           s3cmd \
@@ -633,6 +633,16 @@ jobs:
             --progress \
             --stats \
             put "$LOOP_PATH/$IMAGE_NAME.zst" s3://${{ env.CF_BUCKET_NAME }}/
+
+      # Upload Compressed Image as Artifact
+      - name: Upload Compressed Image as Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: archlinux-rpi-aarch64-image
+          path: ${{ env.LOOP_PATH }}/${{ env.IMAGE_NAME }}.zst
+          retention-days: 7
+          compression-level: 0
 
       # Delete Work Folder
       - name: Delete Work Folder
