@@ -145,7 +145,7 @@ jobs:
       - name: Create Partitions
         run: |
           sfdisk --quiet --wipe always ${LOOP_DEVICE} <<EOF
-          ,256M,0c,*
+          ,512M,0c,*
           ,,83,
           EOF
           sleep 2
