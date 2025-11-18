@@ -45,6 +45,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Initialize pacman (required in Arch container)
+      - name: Initialize pacman
+        run: |
+          pacman-key --init
+          pacman-key --populate archlinux
+          pacman -Syu --noconfirm
+
       # Build the image using build.sh script
       - name: Build Raspberry Pi Image
         run: |
