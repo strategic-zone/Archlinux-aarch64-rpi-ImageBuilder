@@ -45,15 +45,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Initialize pacman (required in Arch container)
-      - name: Initialize pacman
+      # Install build dependencies
+      - name: Install build dependencies
         run: |
           pacman-key --init
           pacman-key --populate archlinux
           pacman -Syu --noconfirm
+          pacman -S --needed --noconfirm \
+            qemu-user-static-binfmt qemu-user-static \
+            dosfstools wget libarchive arch-install-scripts \
+            parted tree fping pwgen git s3cmd zstd
 
       # Build the image using build.sh script
       - name: Build Raspberry Pi Image
+        env:
+          RPI_MODEL: ${{ env.RPI_MODEL }}
+          IMAGE_NAME_PREFIX: ${{ env.IMAGE_NAME_PREFIX }}
+          OS_TIMEZONE: ${{ env.OS_TIMEZONE }}
+          SSH_PUB_KEY_URLS: ${{ env.SSH_PUB_KEY_URLS }}
+          WIFI_SSID: ${{ env.WIFI_SSID }}
+          WIFI_PASSWORD: ${{ env.WIFI_PASSWORD }}
+          ZT_NETWORK_ID: ${{ env.ZT_NETWORK_ID }}
         run: |
           chmod +x ./build.sh
           ./build.sh --rpi-model ${{ env.RPI_MODEL }}
