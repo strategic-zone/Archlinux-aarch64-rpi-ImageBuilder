@@ -131,6 +131,12 @@ check_dependencies() {
 cleanup() {
     local exit_code=$?
 
+    # Skip cleanup in CI - container will be destroyed anyway
+    if [[ -n "${CI:-}" ]] || [[ -n "${GITHUB_ACTIONS:-}" ]]; then
+        log_info "CI environment detected - skipping cleanup (container will be destroyed)"
+        return
+    fi
+
     if [[ "$NO_CLEANUP" == "true" ]]; then
         log_warn "Cleanup skipped (NO_CLEANUP=true). Manual cleanup needed:"
         log_warn "  umount -R $MOUNT_DIR"
