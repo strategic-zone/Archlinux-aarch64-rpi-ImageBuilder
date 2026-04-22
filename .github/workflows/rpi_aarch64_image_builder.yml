@@ -6,7 +6,7 @@ on:
       rpi_model:
         description: 'Raspberry Pi Model (4 or 5)'
         required: true
-        default: '5'
+        default: '4'
         type: choice
         options:
           - '4'
@@ -24,7 +24,7 @@ permissions:
   contents: write
 
 env:
-  RPI_MODEL: ${{ inputs.rpi_model || '5' }}
+  RPI_MODEL: ${{ inputs.rpi_model || '4' }}
   IMAGE_NAME_PREFIX: archlinux-rpi
   OS_TIMEZONE: Europe/Paris
   SSH_PUB_KEY_URLS: https://github.com/ts-sz.keys https://gitlab.com/mg.stratzone.keys
