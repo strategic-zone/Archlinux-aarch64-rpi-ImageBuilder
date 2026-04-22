@@ -123,6 +123,7 @@ jobs:
             --secret_key="${{ secrets.S3_SECRET_KEY }}" \
             --host="${{ secrets.CF_ACCOUNT_ID }}.r2.cloudflarestorage.com" \
             --host-bucket="${{ secrets.CF_ACCOUNT_ID }}.r2.cloudflarestorage.com" \
+            --region=auto \
             --progress \
             --stats \
             put "$IMAGE_FILE" s3://${{ vars.CF_BUCKET_NAME }}/
