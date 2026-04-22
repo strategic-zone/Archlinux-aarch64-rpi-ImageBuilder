@@ -111,6 +111,22 @@ check_root() {
     fi
 }
 
+disable_pacman_sandbox() {
+    # Pacman 7.0 introduced a Landlock-based download sandbox enabled by
+    # default. It fails hard in environments where the kernel does not expose
+    # Landlock (GitHub Actions containers, many LXC setups, older kernels):
+    #     error: restricting filesystem access failed because Landlock is not
+    #     supported by the kernel!
+    # We disable it explicitly in the given pacman.conf.
+    local conf="$1"
+    [[ -f "$conf" ]] || return 0
+
+    # Remove any existing DisableSandbox line, then append a clean one in [options].
+    sed -i '/^[[:space:]]*DisableSandbox[[:space:]]*$/d' "$conf"
+    sed -i '/^\[options\]/a DisableSandbox' "$conf"
+    log_info "Landlock sandbox disabled in $conf"
+}
+
 check_dependencies() {
     local missing_deps=()
     for dep in fallocate losetup sfdisk mkfs.vfat mkfs.ext4 mount umount wget bsdtar arch-chroot; do
@@ -186,6 +202,10 @@ trap cleanup EXIT ERR INT TERM
 
 setup_dependencies() {
     log_info "Installing build dependencies..."
+
+    # Disable pacman 7.0+ Landlock sandbox (kernel feature unavailable in many
+    # CI containers / older kernels). Must be set before any `pacman -Sy`.
+    disable_pacman_sandbox /etc/pacman.conf
 
     if ! pacman -Qi archlinux-keyring &>/dev/null; then
         pacman-key --init
@@ -368,6 +388,9 @@ clean_uboot() {
 
 init_pacman() {
     log_info "Initializing pacman keyring..."
+
+    # Disable Landlock sandbox inside the chroot too (same reason as host).
+    disable_pacman_sandbox "$MOUNT_DIR/etc/pacman.conf"
 
     arch-chroot "$MOUNT_DIR" /usr/bin/pacman-key --init
     arch-chroot "$MOUNT_DIR" /usr/bin/pacman-key --populate archlinuxarm
