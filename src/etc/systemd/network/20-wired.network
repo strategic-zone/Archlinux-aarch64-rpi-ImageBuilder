@@ -1,14 +1,14 @@
 [Match]
-Type=ether
+Name=end0 eth0 en*
 
 [Network]
-DHCP=ipv4
+DHCP=yes
 DNSSEC=no
-LinkLocalAddressing=no
-
-[Address]
-Address=10.123.123.10/24
 
 [DHCPv4]
 RouteMetric=100
 UseDNS=true
+
+[Address]
+Address=10.123.123.10/24
+Scope=link
